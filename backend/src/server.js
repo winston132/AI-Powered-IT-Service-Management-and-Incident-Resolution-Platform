@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Initialize SQLite DB schema and seed data
+// Initialize DB schema and seed data
 initDatabase();
 
 // Mount API Routes
@@ -21,7 +21,16 @@ app.use('/api', apiRoutes);
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
-    service: 'AI-Powered ITSM & Incident Resolution API',
+    service: 'EdgePosture AI - Vision-Based Edge Telemetry Server',
+    modules: [
+      'Module 1: Computer Vision & Real-Time Pose Estimation',
+      'Module 2: Kinematic Geometry & Posture Evaluation Engine',
+      'Module 3: Dynamic Interface Discovery & Peripheral Control Interface',
+      'Module 4: Integrated Audio Subsystem & Database Logging Architecture',
+      'Feature 5: AI Ergonomic Coach & Automated Micro-Breaks',
+      'Feature 6: Ergonomic Digital Twin & 3D Spine Simulator',
+      'Feature 7: Multi-Worker Edge Mesh & Fleet Surveillance Hub'
+    ],
     timestamp: new Date().toISOString()
   });
 });
@@ -35,7 +44,7 @@ app.use((err, req, res, next) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`=======================================================`);
-  console.log(`🤖 AI-Powered ITSM Platform Backend Server`);
+  console.log(`🦾 EdgePosture AI (VisionSensory Core) Backend API`);
   console.log(`Listening on http://localhost:${PORT}`);
   console.log(`API Base URL: http://localhost:${PORT}/api`);
   console.log(`=======================================================`);

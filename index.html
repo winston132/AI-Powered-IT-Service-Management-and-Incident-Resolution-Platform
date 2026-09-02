@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EdgePosture AI | Real-Time Vision & Sensory Orchestration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #060913;
+      --bg-secondary: #0c1222;
+      --bg-tertiary: #131c33;
+      --bg-card: rgba(15, 23, 42, 0.72);
+      --border-glass: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 242, 254, 0.35);
+      --accent-cyan: #00f2fe;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-crimson: #ff3366;
+      --accent-violet: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.07) 0%, transparent 45%),
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 { font-family: var(--font-heading); letter-spacing: -0.02em; font-weight: 700; }
+    .mono { font-family: var(--font-mono); }
+
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-glass);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+      transition: all 0.25s ease;
+    }
+    .glass-panel:hover { border-color: rgba(255, 255, 255, 0.14); }
+
+    .cyber-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .badge-optimal { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 0 12px rgba(16,185,129,0.2); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); box-shadow: 0 0 12px rgba(245,158,11,0.2); }
+    .badge-danger { background: rgba(255, 51, 102, 0.15); color: #ff4d79; border: 1px solid rgba(255, 51, 102, 0.4); box-shadow: 0 0 12px rgba(255,51,102,0.2); animation: pulse-border 1.8s infinite; }
+    .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 242, 254, 0.4); }
+
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 51, 102, 0.3); }
+      50% { box-shadow: 0 0 20px rgba(255, 51, 102, 0.6); }
+    }
+
+    .cyber-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      outline: none;
+    }
+    .cyber-btn-primary { background: linear-gradient(135deg, #00f2fe 0%, #0284c7 100%); color: #030712; box-shadow: 0 0 18px rgba(0, 242, 254, 0.35); }
+    .cyber-btn-primary:hover { box-shadow: 0 0 26px rgba(0, 242, 254, 0.6); transform: translateY(-2px); }
+    .cyber-btn-secondary { background: rgba(15, 23, 42, 0.8); border-color: var(--border-glass); color: var(--text-main); }
+    .cyber-btn-secondary:hover { background: rgba(30, 41, 59, 0.9); border-color: var(--accent-cyan); transform: translateY(-2px); }
+    .cyber-btn-emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #022c22; box-shadow: 0 0 18px rgba(16, 185, 129, 0.35); }
+    .cyber-btn-emerald:hover { box-shadow: 0 0 26px rgba(16, 185, 129, 0.6); transform: translateY(-2px); }
+    .cyber-btn-danger { background: linear-gradient(135deg, #ff3366 0%, #be123c 100%); color: #fff; box-shadow: 0 0 18px rgba(255, 51, 102, 0.35); }
+
+    /* Top Navigation */
+    .top-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px;
+      background: rgba(8, 13, 26, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand-section { display: flex; align-items: center; gap: 14px; }
+    .brand-logo-glow {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
+      color: #030712; font-weight: 900; font-size: 1.2rem;
+    }
+    .brand-title { font-size: 1.25rem; font-weight: 800; background: linear-gradient(90deg, #ffffff 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand-subtitle { font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .telemetry-ticker {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass);
+      padding: 6px 16px; border-radius: 999px; font-family: var(--font-mono); font-size: 0.78rem;
+    }
+    .ticker-label { color: var(--text-dim); }
+    .ticker-val { color: var(--accent-cyan); font-weight: 700; }
+
+    /* Tabs */
+    .tab-nav {
+      display: flex; gap: 8px; padding: 10px 28px;
+      background: rgba(12, 18, 34, 0.5); border-bottom: 1px solid var(--border-glass);
+      overflow-x: auto;
+    }
+    .tab-btn {
+      display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+      border-radius: 8px; background: transparent; border: 1px solid transparent;
+      color: var(--text-muted); font-family: var(--font-heading); font-size: 0.88rem;
+      font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.04); }
+    .tab-btn.active {
+      background: rgba(0, 242, 254, 0.12); border-color: rgba(0, 242, 254, 0.4);
+      color: var(--accent-cyan); box-shadow: 0 0 16px rgba(0, 242, 254, 0.15);
+    }
+
+    /* Main Container */
+    .main-container { padding: 24px 28px; max-width: 1720px; margin: 0 auto; }
+    .studio-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
+    @media (max-width: 1200px) { .studio-grid { grid-template-columns: 1fr; } }
+
+    /* HUD Viewport */
+    .viewport-box {
+      position: relative; width: 100%; aspect-ratio: 16 / 10;
+      background: #04060c; border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .viewport-canvas { width: 100%; height: 100%; display: block; }
+    .scanlines {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 6px 100%; pointer-events: none; opacity: 0.5;
+    }
+
+    .corner-bracket { position: absolute; width: 18px; height: 18px; border-color: var(--accent-cyan); border-style: solid; pointer-events: none; }
+    .cb-tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+    .cb-tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+    .cb-bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+    .cb-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+    /* Metric Bars */
+    .metric-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .metric-hdr { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .bar-track { width: 100%; height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s ease, background-color 0.3s ease; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+    }
+    .modal-box {
+      background: var(--bg-secondary); border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 18px; max-width: 650px; width: 100%; padding: 26px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Telemetry Header -->
+    <header class="top-nav">
+      <div class="brand-section">
+        <div class="brand-logo-glow">🦾</div>
+        <div>
+          <div class="brand-title">EDGEPOSTURE AI</div>
+          <div class="brand-subtitle">VisionSensory™ Real-Time Edge Platform</div>
+        </div>
+      </div>
+
+      <div class="telemetry-ticker">
+        <div><span class="ticker-label">ACCEL:</span> <span class="ticker-val">NPU/WebGL</span></div>
+        <div><span class="ticker-label">FPS:</span> <span id="fpsTicker" class="ticker-val" style="color: #10b981;">30</span></div>
+        <div><span class="ticker-label">LATENCY:</span> <span id="latTicker" class="ticker-val">12ms</span></div>
+        <div><span class="ticker-label">PERIPHERALS:</span> <span class="ticker-val">4 Active</span></div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="postureStateBadge" class="cyber-badge badge-optimal">OPTIMAL ALIGNMENT</span>
+        <button class="cyber-btn cyber-btn-secondary" onclick="openCalibration()" style="padding: 6px 12px; font-size: 0.78rem;">
+          ✨ Calibrate
+        </button>
+        <button id="muteBtn" class="cyber-btn cyber-btn-secondary" onclick="toggleMute()" style="padding: 6px 10px; font-size: 0.78rem;">
+          🔊 Audio On
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('studio')">📹 Edge Vision Studio (Mod 1 & 2)</button>
+      <button class="tab-btn" onclick="switchTab('peripherals')">🎮 Peripheral Orchestrator (Mod 3)</button>
+      <button class="tab-btn" onclick="switchTab('audio')">🔊 Procedural Audio Lab (Mod 4)</button>
+      <button class="tab-btn" onclick="switchTab('database')">📊 Telemetry & Incident DB (Mod 4)</button>
+      <button class="tab-btn" onclick="switchTab('coach')">🧘 AI Ergonomic Coach (Feature 5)</button>
+      <button class="tab-btn" onclick="switchTab('spine')">🦴 3D Spine Digital Twin (Feature 6)</button>
+      <button class="tab-btn" onclick="switchTab('fleet')">🌐 Fleet Mesh Grid (Feature 7)</button>
+    </nav>
+
+    <!-- Main Content Stage -->
+    <main class="main-container">
+      <!-- TAB 1: STUDIO (Mod 1 & 2) -->
+      <section id="tab-studio" class="tab-content">
+        <div class="studio-grid">
+          <!-- Viewport HUD -->
+          <div class="glass-panel" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <div>
+                <h3 style="font-size: 1.1rem; color: #fff;">Module 1: Real-Time Edge Vision & 17-Point Skeletal HUD</h3>
+                <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">On-device skeletal keypoint inference with live kinematic angle vectors</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button id="camToggleBtn" class="cyber-btn cyber-btn-secondary" onclick="toggleCamera()" style="padding: 6px 12px; font-size: 0.78rem;">
+                  📷 Start Webcam
+                </button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="toggleMirror()" style="padding: 6px 10px; font-size: 0.78rem;">
+                  🔄 Mirror
+                </button>
+              </div>
+            </div>
+
+            <div class="viewport-box">
+              <canvas id="visionCanvas" width="800" height="500" class="viewport-canvas"></canvas>
+              <div class="corner-bracket cb-tl"></div>
+              <div class="corner-bracket cb-tr"></div>
+              <div class="corner-bracket cb-bl"></div>
+              <div class="corner-bracket cb-br"></div>
+              <div class="scanlines"></div>
+
+              <!-- HUD Floating Badges -->
+              <div style="position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; pointer-events: none;">
+                <span id="streamTypeBadge" class="cyber-badge badge-cyan">STREAM: SYNTHETIC</span>
+                <span class="cyber-badge badge-optimal">TRACKING: ACCURATE</span>
+              </div>
+              <div style="position: absolute; bottom: 12px; right: 12px; display: flex; gap: 6;">
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPrivacy('normal')" style="padding: 4px 8px; font-size: 0.72rem;">RGB</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPrivacy('blur')" style="padding: 4px 8px; font-size: 0.72rem;">Blur</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPrivacy('wireframe')" style="padding: 4px 8px; font-size: 0.72rem;">Wireframe</button>
+              </div>
+            </div>
+
+            <!-- Preset Injections -->
+            <div style="margin-top: 14px;">
+              <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 600; margin-bottom: 8px; text-transform: uppercase;">
+                ⚡ Edge Biomechanical Test Streams & Posture Anomaly Sandbox:
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;">
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPosePreset('normal')" style="font-size: 0.75rem; padding: 6px 8px;">▶ Neutral Spine</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPosePreset('forward_head')" style="font-size: 0.75rem; padding: 6px 8px;">▶ Forward Head Drift</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPosePreset('thoracic_slouch')" style="font-size: 0.75rem; padding: 6px 8px;">▶ Thoracic Slouch</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="setPosePreset('shoulder_drop')" style="font-size: 0.75rem; padding: 6px 8px;">▶ Shoulder Tilt</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Module 2 Kinematics Panel -->
+          <div class="glass-panel" style="padding: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 1.1rem; color: #fff;">Module 2: Kinematic Geometry Engine</h3>
+                <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">CVA, shoulder tilt, kyphosis & disc strain calculations</p>
+              </div>
+              <span id="ehsBadge" class="cyber-badge badge-optimal">OPTIMAL</span>
+            </div>
+
+            <!-- Radial Gauge -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+              <div style="position: relative; width: 130px; height: 130px;">
+                <svg viewBox="0 0 130 130" style="transform: rotate(-90deg); width: 100%; height: 100%;">
+                  <circle cx="65" cy="65" r="52" fill="transparent" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                  <circle id="scoreRadialFill" cx="65" cy="65" r="52" fill="transparent" stroke="#10b981" stroke-width="10" stroke-dasharray="326.7" stroke-dashoffset="32.6" stroke-linecap="round" style="transition: all 0.3s ease;"/>
+                </svg>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <span id="scoreNum" style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); color: #10b981; line-height: 1;">90</span>
+                  <span style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono);">EHS SCORE</span>
+                </div>
+              </div>
+
+              <div>
+                <div style="background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-glass); margin-bottom: 6px;">
+                  <div style="font-size: 0.68rem; color: var(--text-dim);">TOTAL SPINAL LOAD</div>
+                  <div id="discForceVal" style="font-size: 1.1rem; font-weight: 800; color: #00f2fe; font-family: var(--font-mono);">312 N</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.03); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-glass);">
+                  <div style="font-size: 0.68rem; color: var(--text-dim);">C5/C7 CERVICAL STRAIN</div>
+                  <div id="cervicalStrainVal" style="font-size: 0.95rem; font-weight: 700; color: #f8fafc; font-family: var(--font-mono);">215 N</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kinematic Angle Meters -->
+            <div class="metric-row">
+              <div class="metric-hdr">
+                <span><strong>Craniovertebral Angle (CVA)</strong> <span style="font-size: 0.72rem; color: var(--text-dim);">(Normal: &ge; 50°)</span></span>
+                <span id="cvaVal" class="mono" style="font-weight: 700; color: #10b981;">53.2°</span>
+              </div>
+              <div class="bar-track"><div id="cvaBar" class="bar-fill" style="width: 76%; background: #10b981;"></div></div>
+            </div>
+
+            <div class="metric-row">
+              <div class="metric-hdr">
+                <span><strong>Shoulder Alignment Tilt</strong> <span style="font-size: 0.72rem; color: var(--text-dim);">(Normal: &le; 2.5°)</span></span>
+                <span id="shoulderVal" class="mono" style="font-weight: 700; color: #10b981;">Δ 1.2°</span>
+              </div>
+              <div class="bar-track"><div id="shoulderBar" class="bar-fill" style="width: 15%; background: #10b981;"></div></div>
+            </div>
+
+            <div class="metric-row">
+              <div class="metric-hdr">
+                <span><strong>Thoracic Flexion (Slouch)</strong> <span style="font-size: 0.72rem; color: var(--text-dim);">(Neutral: 82° - 98°)</span></span>
+                <span id="thoracicVal" class="mono" style="font-weight: 700; color: #10b981;">89.0°</span>
+              </div>
+              <div class="bar-track"><div id="thoracicBar" class="bar-fill" style="width: 74%; background: #10b981;"></div></div>
+            </div>
+
+            <div class="metric-row">
+              <div class="metric-hdr">
+                <span><strong>Screen Gaze Distance</strong> <span style="font-size: 0.72rem; color: var(--text-dim);">(Ergonomic: 45 - 75 cm)</span></span>
+                <span id="gazeVal" class="mono" style="font-weight: 700; color: #10b981;">56 cm</span>
+              </div>
+              <div class="bar-track"><div id="gazeBar" class="bar-fill" style="width: 60%; background: #10b981;"></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: PERIPHERALS (Mod 3) -->
+      <section id="tab-peripherals" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Module 3: Dynamic Interface Discovery & Peripheral Controller</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Multi-protocol hardware bus (BLE 5.2, USB-HID, WebSerial, TCP Actuator Bridge)</p>
+            </div>
+            <button class="cyber-btn cyber-btn-primary" onclick="discoverNewPeripheral()" style="padding: 6px 14px; font-size: 0.8rem;">
+              📡 Discover Peripherals
+            </button>
+          </div>
+
+          <!-- Escalation Banner -->
+          <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 0.82rem; font-weight: 700; color: #00f2fe;">⚡ SENSORY ESCALATION ENGINE STATUS:</span>
+              <span id="tierBadge" class="cyber-badge badge-cyan">TIER 0: STANDBY</span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">
+              Slouch Duration Counter: <strong id="slouchTimerText" style="color: #fff; font-family: var(--font-mono);">0s</strong> / Automatic multi-tier vibration and lighting trigger.
+            </div>
+          </div>
+
+          <!-- Peripherals Grid -->
+          <div id="peripheralsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Sandbox Commander -->
+          <div style="background: rgba(12, 18, 34, 0.7); border-radius: 12px; padding: 16px; border: 1px solid var(--border-glass);">
+            <div style="font-size: 0.8rem; font-weight: 700; color: #f8fafc; margin-bottom: 12px; text-transform: uppercase;">
+              🎮 Interactive Hardware Commander Sandbox:
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px;">Trigger Haptic Patterns:</div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  <button class="cyber-btn cyber-btn-secondary" onclick="triggerHaptic('Pulse (90Hz)')" style="font-size: 0.75rem; padding: 6px 10px; justify-content: flex-start;">
+                    ⚡ Gentle Pulse (90Hz)
+                  </button>
+                  <button class="cyber-btn cyber-btn-secondary" onclick="triggerHaptic('Dual Acromion (160Hz)')" style="font-size: 0.75rem; padding: 6px 10px; justify-content: flex-start;">
+                    ⚡ Dual Acromion Buzz (160Hz)
+                  </button>
+                  <button class="cyber-btn cyber-btn-danger" onclick="triggerHaptic('Staccato Alert (210Hz)')" style="font-size: 0.75rem; padding: 6px 10px; justify-content: flex-start;">
+                    ⚡ Staccato Slouch Alert (210Hz)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px;">ErgoGlow™ Ambient Lightbar:</div>
+                <div style="display: flex; gap: 10px; margin-top: 8px;">
+                  <button onclick="setLightColor('#10b981')" style="width: 32px; height: 32px; border-radius: 50%; background: #10b981; border: 2px solid #fff; cursor: pointer; box-shadow: 0 0 10px #10b981;"></button>
+                  <button onclick="setLightColor('#00f2fe')" style="width: 32px; height: 32px; border-radius: 50%; background: #00f2fe; border: 2px solid transparent; cursor: pointer;"></button>
+                  <button onclick="setLightColor('#f59e0b')" style="width: 32px; height: 32px; border-radius: 50%; background: #f59e0b; border: 2px solid transparent; cursor: pointer;"></button>
+                  <button onclick="setLightColor('#ff3366')" style="width: 32px; height: 32px; border-radius: 50%; background: #ff3366; border: 2px solid transparent; cursor: pointer;"></button>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 10px;">360° Visual Ergonomic Glow</div>
+              </div>
+
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px;">SmartDesk™ Actuator:</div>
+                <div style="display: flex; gap: 8px;">
+                  <button class="cyber-btn cyber-btn-secondary" onclick="setDeskHeight(74.0)" style="font-size: 0.75rem;">Sit (74cm)</button>
+                  <button class="cyber-btn cyber-btn-emerald" onclick="setDeskHeight(106.0)" style="font-size: 0.75rem;">Stand (106cm)</button>
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 10px;">Motorized Sit-Stand Actuation</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: AUDIO (Mod 4) -->
+      <section id="tab-audio" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Module 4: Procedural Audio Subsystem & Synthesizer</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Web Audio API frequency oscillators, spatial stereo panner & voice prompts</p>
+            </div>
+          </div>
+
+          <!-- Spectrum Canvas -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 6px;">LIVE FFT FREQUENCY SPECTRUM (20Hz - 20kHz):</div>
+            <canvas id="audioCanvas" width="800" height="90" style="width: 100%; height: 90px; background: #04060c; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);"></canvas>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px;">
+            <div style="background: rgba(12, 18, 34, 0.6); border-radius: 10px; padding: 14px; border: 1px solid var(--border-glass);">
+              <div style="font-size: 0.78rem; font-weight: 700; color: #f8fafc; margin-bottom: 10px;">🎵 PROCEDURAL SYNTH SOUNDBOARD:</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button class="cyber-btn cyber-btn-secondary" onclick="playTone(528, 'sine')" style="font-size: 0.75rem; justify-content: flex-start;">▶ 528Hz Harmonic Chime</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="playTone(440, 'triangle')" style="font-size: 0.75rem; justify-content: flex-start;">▶ 440Hz Gentle Ping</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="playTone(330, 'sawtooth')" style="font-size: 0.75rem; justify-content: flex-start;">▶ Slouch Warning Chord</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="playTone(432, 'sine')" style="font-size: 0.75rem; justify-content: flex-start;">▶ 432Hz Binaural Beat</button>
+                <button class="cyber-btn cyber-btn-danger" onclick="playTone(880, 'square')" style="font-size: 0.75rem; justify-content: flex-start; grid-column: span 2;">▶ Tier-4 Escalation Alarm</button>
+              </div>
+            </div>
+
+            <div style="background: rgba(12, 18, 34, 0.6); border-radius: 10px; padding: 14px; border: 1px solid var(--border-glass);">
+              <div style="font-size: 0.78rem; font-weight: 700; color: #f8fafc; margin-bottom: 10px;">🎙️ NATURAL VOICE GUIDANCE:</div>
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <button class="cyber-btn cyber-btn-secondary" onclick="speak('Please align your shoulders and lift your chin.')" style="font-size: 0.75rem; justify-content: flex-start;">"Please align your shoulders"</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="speak('Forward head posture detected. Realign cervical spine.')" style="font-size: 0.75rem; justify-content: flex-start;">"Forward head posture detected"</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="speak('Time for a 30 second micro-break stretch.')" style="font-size: 0.75rem; justify-content: flex-start;">"Time for a 30 second micro-break"</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: DATABASE & INCIDENTS (Mod 4) -->
+      <section id="tab-database" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Module 4: Edge Time-Series Database & Incident Audit Trail</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Indexed high-throughput frame telemetry, posture logs, and clinical audit export</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="cyber-btn cyber-btn-secondary" onclick="exportCSV()" style="padding: 6px 12px; font-size: 0.78rem;">📥 Export CSV</button>
+              <button class="cyber-btn cyber-btn-secondary" onclick="exportJSON()" style="padding: 6px 12px; font-size: 0.78rem;">📥 JSON Dump</button>
+              <button class="cyber-btn cyber-btn-emerald" onclick="openClinicalReport()" style="padding: 6px 12px; font-size: 0.78rem;">📄 Clinical Report</button>
+            </div>
+          </div>
+
+          <!-- KPI Summary -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px;">
+              <div style="font-size: 0.72rem; color: var(--text-dim);">COMPLIANCE RATE</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; font-family: var(--font-heading); margin-top: 4px;">94%</div>
+              <div style="font-size: 0.68rem; color: var(--text-muted);">Target: &ge; 85% Neutral Spine</div>
+            </div>
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px;">
+              <div style="font-size: 0.72rem; color: var(--text-dim);">AVG POSTURE SCORE</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #00f2fe; font-family: var(--font-heading); margin-top: 4px;">88.2</div>
+              <div style="font-size: 0.68rem; color: var(--text-muted);">Weighted EHS Index</div>
+            </div>
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px;">
+              <div style="font-size: 0.72rem; color: var(--text-dim);">MTTR TO CORRECT</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; font-family: var(--font-heading); margin-top: 4px;">5.8s</div>
+              <div style="font-size: 0.68rem; color: var(--text-muted);">Correction latency</div>
+            </div>
+            <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 10px; padding: 14px;">
+              <div style="font-size: 0.72rem; color: var(--text-dim);">LOGGED INCIDENTS</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: #ff3366; font-family: var(--font-heading); margin-top: 4px;">3</div>
+              <div style="font-size: 0.68rem; color: var(--text-muted);">Auto-escalated events</div>
+            </div>
+          </div>
+
+          <!-- Incidents Table -->
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem;">
+              <thead>
+                <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-dim); text-align: left;">
+                  <th style="padding: 8px 10px;">INCIDENT ID</th>
+                  <th style="padding: 8px 10px;">TIMESTAMP</th>
+                  <th style="padding: 8px 10px;">VIOLATION TYPE</th>
+                  <th style="padding: 8px 10px;">SEVERITY</th>
+                  <th style="padding: 8px 10px;">DURATION</th>
+                  <th style="padding: 8px 10px;">ACTUATED HARDWARE</th>
+                  <th style="padding: 8px 10px;">STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="incidentTableBody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: AI COACH (Feature 5) -->
+      <section id="tab-coach" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Feature 5: AI Ergonomic Coach & Micro-Break Workout Tracker</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Real-time vision pose-tracked biomechanical reset routines and rep counting</p>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span class="cyber-badge badge-warning">🔥 3 DAY STREAK</span>
+              <span class="cyber-badge badge-cyan">2 / 4 COMPLETED</span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; margin-bottom: 20px;">
+            <div style="background: rgba(12, 18, 34, 0.7); border-radius: 14px; padding: 18px; border: 1px solid var(--border-glass);">
+              <span class="cyber-badge badge-cyan" style="margin-bottom: 8px;">ACTIVE EXERCISE 01</span>
+              <h4 id="coachExerciseTitle" style="font-size: 1.2rem; color: #f8fafc; margin-top: 4px;">Cervical Chin Retraction (Chin Tuck)</h4>
+              <div style="font-size: 0.75rem; color: #00f2fe; font-family: var(--font-mono); margin-top: 2px;">Target: Deep Cervical Flexors (C1-C7)</div>
+              <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin: 12px 0;">
+                Draw your chin straight backward without tilting your head downward. Re-aligns C-spine and relieves cervical suboccipital strain.
+              </p>
+              <div style="display: flex; gap: 10px;">
+                <button id="coachStartBtn" class="cyber-btn cyber-btn-primary" onclick="startGuidedExercise()">▶ Start Guided Reps</button>
+                <button class="cyber-btn cyber-btn-secondary" onclick="nextExercise()">Next Stretch ➔</button>
+              </div>
+            </div>
+
+            <!-- Rep Counter Ring -->
+            <div style="background: rgba(15, 23, 42, 0.7); border-radius: 14px; padding: 18px; border: 1px solid var(--border-glass); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <div style="position: relative; width: 130px; height: 130px; margin-bottom: 10px;">
+                <svg viewBox="0 0 130 130" style="transform: rotate(-90deg); width: 100%; height: 100%;">
+                  <circle cx="65" cy="65" r="54" fill="transparent" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                  <circle id="repRingFill" cx="65" cy="65" r="54" fill="transparent" stroke="#00f2fe" stroke-width="10" stroke-dasharray="339.3" stroke-dashoffset="200" stroke-linecap="round" style="transition: all 0.3s ease;"/>
+                </svg>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <span id="repCounterText" style="font-size: 1.8rem; font-weight: 800; color: #fff;">0 / 5</span>
+                  <span style="font-size: 0.65rem; color: var(--text-dim); font-family: var(--font-mono);">REPETITIONS</span>
+                </div>
+              </div>
+              <div id="holdStatusText" style="font-size: 0.78rem; color: var(--text-dim);">Press "Start Guided Reps" to begin</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: 3D SPINE (Feature 6) -->
+      <section id="tab-spine" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Feature 6: Ergonomic Digital Twin & 3D Biomechanical Spine Simulator</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Intradiscal compression pressure heatmap and musculoskeletal stress vectors</p>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="cyber-btn cyber-btn-primary" onclick="setSpineView('lateral')">Lateral View</button>
+              <button class="cyber-btn cyber-btn-secondary" onclick="setSpineView('anterior')">Anterior View</button>
+              <button class="cyber-btn cyber-btn-secondary" onclick="setSpineView('oblique')">Oblique View</button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
+            <div style="position: relative; width: 100%; height: 380px; background: #04060f; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-glass);">
+              <canvas id="spineCanvas" width="540" height="380" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="background: rgba(12, 18, 34, 0.7); border-radius: 10px; padding: 14px; border: 1px solid var(--border-glass);">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">BIOMECHANICAL SEGMENT LOAD:</div>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.76rem;">
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px;">
+                    <span style="color: var(--text-muted);">C1-C7 Cervical Complex:</span>
+                    <span id="spineCervicalText" style="font-weight: 700; color: #10b981; font-family: var(--font-mono);">215 N (NORMAL)</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px;">
+                    <span style="color: var(--text-muted);">T1-T12 Thoracic Spine:</span>
+                    <span id="spineThoracicText" style="font-weight: 700; color: #10b981; font-family: var(--font-mono);">250 N (NEUTRAL)</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.04); padding-bottom: 4px;">
+                    <span style="color: var(--text-muted);">L1-L5 Lumbar Base:</span>
+                    <span id="spineLumbarText" style="font-weight: 700; color: #10b981; font-family: var(--font-mono);">290 N (NOMINAL)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background: rgba(15, 23, 42, 0.6); border-radius: 10px; padding: 14px; border: 1px solid var(--border-glass); font-size: 0.75rem; line-height: 1.5;">
+                <strong style="color: #00f2fe;">ℹ️ Clinical Disc Compression Note:</strong>
+                Calculated dynamically from the moment arm of cranial mass (5kg) multiplied by posture flexion angle. Every 2.5cm of forward head posture adds approximately 45 Newtons of cervical disc compression.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: FLEET MESH (Feature 7) -->
+      <section id="tab-fleet" class="tab-content" style="display: none;">
+        <div class="glass-panel" style="padding: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <h3 style="font-size: 1.1rem; color: #fff;">Feature 7: Multi-Worker Edge Mesh & Fleet Surveillance Hub</h3>
+              <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 2px;">Enterprise ergonomic telemetry aggregation and OSHA/ISO 9241-5 compliance</p>
+            </div>
+            <span class="cyber-badge badge-cyan">4 NODES ONLINE</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-bottom: 20px;">
+            <div style="background: rgba(12, 18, 34, 0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 16px;">
+              <div style="font-size: 0.9rem; font-weight: 700; color: #f8fafc;">Workstation Alpha (Primary Edge)</div>
+              <div style="font-size: 0.72rem; color: #00f2fe; font-family: var(--font-mono);">EDGE-NODE-01 • Engineer W. (Active)</div>
+              <div style="margin-top: 8px; font-size: 0.75rem;">Score: <strong style="color: #10b981;">88/100</strong> • CVA: <strong>52.4°</strong> • 4/5 Devices</div>
+            </div>
+
+            <div style="background: rgba(12, 18, 34, 0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 16px;">
+              <div style="font-size: 0.9rem; font-weight: 700; color: #f8fafc;">Biomechanics Ergonomics Lab B</div>
+              <div style="font-size: 0.72rem; color: #00f2fe; font-family: var(--font-mono);">EDGE-NODE-02 • Dr. Chen</div>
+              <div style="margin-top: 8px; font-size: 0.75rem;">Score: <strong style="color: #10b981;">95/100</strong> • CVA: <strong>56.1°</strong> • 5/5 Devices</div>
+            </div>
+
+            <div style="background: rgba(12, 18, 34, 0.7); border: 1px solid #ff3366; border-radius: 12px; padding: 16px; box-shadow: 0 0 16px rgba(255, 51, 102, 0.25);">
+              <div style="font-size: 0.9rem; font-weight: 700; color: #f8fafc;">Remote SecOps Station Delta</div>
+              <div style="font-size: 0.72rem; color: #ff3366; font-family: var(--font-mono);">EDGE-NODE-03 • Sarah M.</div>
+              <div style="margin-top: 8px; font-size: 0.75rem;">Score: <strong style="color: #ff3366;">58/100</strong> • CVA: <strong>34.8°</strong> • 2/5 Devices</div>
+            </div>
+
+            <div style="background: rgba(12, 18, 34, 0.7); border: 1px solid var(--border-glass); border-radius: 12px; padding: 16px;">
+              <div style="font-size: 0.9rem; font-weight: 700; color: #f8fafc;">Executive Suite Desk 04</div>
+              <div style="font-size: 0.72rem; color: #00f2fe; font-family: var(--font-mono);">EDGE-NODE-04 • James V.</div>
+              <div style="margin-top: 8px; font-size: 0.75rem;">Score: <strong style="color: #10b981;">91/100</strong> • CVA: <strong>53.0°</strong> • 3/5 Devices</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Calibration Modal -->
+    <div id="calibrationModal" class="modal-backdrop" style="display: none;" onclick="closeCalibration()">
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2 style="font-size: 1.2rem; color: #00f2fe;">Biomechanical Posture Baseline Calibration</h2>
+          <button class="cyber-btn cyber-btn-secondary" onclick="closeCalibration()" style="padding: 4px 8px;">✕</button>
+        </div>
+        <p style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+          Sit upright in your natural neutral posture and align your gaze with the monitor. Click below to lock your user-specific anthropometric baseline.
+        </p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="cyber-btn cyber-btn-primary" onclick="saveCalibration()">✅ Lock Baseline Posture</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State Variables
+    let currentTab = 'studio';
+    let isWebcam = false;
+    let isMirrored = true;
+    let privacy = 'normal';
+    let activePreset = 'normal';
+    let isMuted = false;
+    let spineView = 'lateral';
+    let syntheticTime = 0;
+    let slouchTimer = 0;
+
+    // Peripherals List
+    const peripherals = [
+      { id: 'cushion_01', name: 'EdgeHaptic™ Lumbar Cushion', protocol: 'BLE GATT 5.2', status: 'connected', battery: 88, type: 'haptic' },
+      { id: 'bioband_02', name: 'SmartPosture™ BioBand', protocol: 'BLE 5.2', status: 'connected', battery: 94, type: 'wearable' },
+      { id: 'lightbar_03', name: 'ErgoGlow™ RGB Lightbar', protocol: 'USB-HID / WebSerial', status: 'connected', battery: null, type: 'lighting' },
+      { id: 'smartdesk_04', name: 'SmartDesk™ Actuator Bridge', protocol: 'TCP / REST ESP32', status: 'connected', battery: null, type: 'actuator', height: 74.0 }
+    ];
+
+    const incidents = [
+      { id: 'INC-8092', time: '10:04:12', type: 'Severe Forward Head Posture', sev: 'HIGH', dur: '42s', hw: 'EdgeHaptic (Staccato)', status: 'Resolved (8s)' },
+      { id: 'INC-8091', time: '09:48:30', type: 'Thoracic Slouch Flexion', sev: 'MEDIUM', dur: '28s', hw: 'SmartPosture BioBand', status: 'Resolved (5s)' },
+      { id: 'INC-8090', time: '09:22:15', type: 'Asymmetrical Shoulder Drop', sev: 'MEDIUM', dur: '35s', hw: 'ErgoGlow Amber Glow', status: 'Resolved (12s)' }
+    ];
+
+    // Audio Context
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, type = 'sine', duration = 0.5) {
+      if (isMuted) return;
+      try {
+        const ctx = getAudioContext();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    function speak(text) {
+      if (isMuted || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.05;
+        window.speechSynthesis.speak(u);
+      } catch(e) {}
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      document.getElementById('muteBtn').innerText = isMuted ? '🔇 Muted' : '🔊 Audio On';
+    }
+
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.style.display = 'block';
+
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function setPrivacy(mode) {
+      privacy = mode;
+    }
+
+    function toggleMirror() {
+      isMirrored = !isMirrored;
+    }
+
+    function setPosePreset(preset) {
+      activePreset = preset;
+      document.getElementById('streamTypeBadge').innerText = 'STREAM: ' + preset.toUpperCase();
+    }
+
+    function openCalibration() {
+      document.getElementById('calibrationModal').style.display = 'flex';
+    }
+
+    function closeCalibration() {
+      document.getElementById('calibrationModal').style.display = 'none';
+    }
+
+    function saveCalibration() {
+      playTone(528, 'sine');
+      speak('Posture baseline calibration saved.');
+      closeCalibration();
+    }
+
+    function renderPeripherals() {
+      const container = document.getElementById('peripheralsGrid');
+      if (!container) return;
+      container.innerHTML = peripherals.map(p => `
+        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 12px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 700; color: #f8fafc;">${p.name}</div>
+              <div style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">${p.protocol}</div>
+            </div>
+            <span style="font-size: 0.68rem; padding: 2px 8px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 600;">CONNECTED</span>
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 0.72rem; color: var(--text-muted); margin-top: 8px;">
+            ${p.battery ? `<span>🔋 ${p.battery}%</span>` : ''}
+            <span>RSSI: -58 dBm</span>
+            ${p.height ? `<span>Height: ${p.height}cm</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderIncidents() {
+      const tbody = document.getElementById('incidentTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = incidents.map(inc => `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+          <td style="padding: 8px 10px; font-family: var(--font-mono); color: #00f2fe;">${inc.id}</td>
+          <td style="padding: 8px 10px; color: var(--text-muted);">${inc.time}</td>
+          <td style="padding: 8px 10px; font-weight: 600; color: #f8fafc;">${inc.type}</td>
+          <td style="padding: 8px 10px;"><span class="cyber-badge ${inc.sev === 'HIGH' ? 'badge-danger' : 'badge-warning'}" style="padding: 2px 6px; font-size: 0.68rem;">${inc.sev}</span></td>
+          <td style="padding: 8px 10px; font-family: var(--font-mono);">${inc.dur}</td>
+          <td style="padding: 8px 10px; color: var(--text-muted); font-size: 0.72rem;">${inc.hw}</td>
+          <td style="padding: 8px 10px; color: #10b981; font-weight: 600;">✓ ${inc.status}</td>
+        </tr>
+      `).join('');
+    }
+
+    function triggerHaptic(name) {
+      playTone(440, 'triangle');
+      alert(`Actuation signal [${name}] triggered to connected haptic units.`);
+    }
+
+    function setLightColor(color) {
+      playTone(528, 'sine');
+    }
+
+    function setDeskHeight(h) {
+      playTone(660, 'sine');
+      alert(`SmartDesk Actuator elevating to ${h} cm`);
+    }
+
+    function discoverNewPeripheral() {
+      playTone(528, 'sine');
+      peripherals.push({
+        id: 'band_' + Math.floor(Math.random() * 100),
+        name: 'EdgeNode™ BioBand #' + Math.floor(Math.random() * 50),
+        protocol: 'BLE GATT 5.3',
+        status: 'connected',
+        battery: 91,
+        type: 'wearable'
+      });
+      renderPeripherals();
+    }
+
+    function exportCSV() {
+      const csv = 'Timestamp,CVA,ShoulderTilt,Score\n' + Date.now() + ',52.4,1.2,88\n';
+      const b = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = 'EdgePosture_Telemetry.csv';
+      a.click();
+    }
+
+    function exportJSON() {
+      const data = { system: 'EdgePosture AI', generated: new Date().toISOString(), incidents };
+      const b = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(b);
+      a.download = 'EdgePosture_Diagnostics.json';
+      a.click();
+    }
+
+    function openClinicalReport() {
+      window.print();
+    }
+
+    // AI Coach Exercise
+    let coachTimer = null;
+    let coachReps = 0;
+    function startGuidedExercise() {
+      coachReps = 0;
+      playTone(432, 'sine');
+      speak('Starting guided chin tuck exercise. Hold form.');
+      document.getElementById('coachStartBtn').innerText = 'Holding Form...';
+      document.getElementById('holdStatusText').innerText = 'Tracking Cervical Retraction: Rep 1...';
+
+      let count = 0;
+      clearInterval(coachTimer);
+      coachTimer = setInterval(() => {
+        count++;
+        if (count % 3 === 0) {
+          coachReps++;
+          playTone(528, 'sine');
+          document.getElementById('repCounterText').innerText = coachReps + ' / 5';
+          document.getElementById('repRingFill').setAttribute('stroke-dashoffset', (339.3 * (1 - coachReps / 5)));
+          if (coachReps >= 5) {
+            clearInterval(coachTimer);
+            speak('Great job! Exercise completed.');
+            document.getElementById('holdStatusText').innerText = '✓ Exercise Completed!';
+            document.getElementById('coachStartBtn').innerText = '▶ Repeat Exercise';
+          }
+        }
+      }, 1000);
+    }
+
+    function nextExercise() {
+      clearInterval(coachTimer);
+      coachReps = 0;
+      document.getElementById('repCounterText').innerText = '0 / 5';
+      document.getElementById('repRingFill').setAttribute('stroke-dashoffset', '339.3');
+      document.getElementById('coachExerciseTitle').innerText = 'Scapular Retraction (Shoulder Squeeze)';
+      document.getElementById('holdStatusText').innerText = 'Ready for Scapular Squeeze';
+    }
+
+    function setSpineView(v) {
+      spineView = v;
+    }
+
+    // Main Vision & Canvas Loop
+    const canvas = document.getElementById('visionCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const spineCanvas = document.getElementById('spineCanvas');
+    const spineCtx = spineCanvas.getContext('2d');
+
+    function mainAnimationLoop(time) {
+      syntheticTime += 0.033;
+      const t = syntheticTime;
+
+      // 1. Compute Posture Kinematics
+      let headForward = 0;
+      let shoulderDelta = 0;
+      let thoracicOffset = 0;
+
+      if (activePreset === 'forward_head') {
+        headForward = 0.09 + Math.sin(t * 0.6) * 0.02;
+      } else if (activePreset === 'thoracic_slouch') {
+        thoracicOffset = 0.07;
+        headForward = 0.05;
+      } else if (activePreset === 'shoulder_drop') {
+        shoulderDelta = 0.045;
+      }
+
+      const cva = Math.round(activePreset === 'forward_head' ? 33 : (activePreset === 'thoracic_slouch' ? 38 : 53 + Math.sin(t * 1.5)));
+      const shoulderTilt = Number((activePreset === 'shoulder_drop' ? 6.8 : 1.2 + Math.abs(Math.sin(t * 0.8))).toFixed(1));
+      const thoracic = Math.round(activePreset === 'thoracic_slouch' ? 71 : 89 + Math.sin(t * 1.1));
+      const score = Math.round(Math.max(30, 100 - (54 - cva) * 1.8 - (shoulderTilt > 2.5 ? 20 : 0) - (thoracic < 80 ? 25 : 0)));
+      const discForce = Math.round(280 + (54 - cva) * 14 + (90 - thoracic) * 6);
+
+      // Update UI Tickers
+      document.getElementById('scoreNum').innerText = score;
+      document.getElementById('scoreNum').style.color = score >= 80 ? '#10b981' : (score >= 60 ? '#f59e0b' : '#ff3366');
+      document.getElementById('scoreRadialFill').setAttribute('stroke', score >= 80 ? '#10b981' : (score >= 60 ? '#f59e0b' : '#ff3366'));
+      document.getElementById('scoreRadialFill').setAttribute('stroke-dashoffset', 326.7 * (1 - score / 100));
+
+      document.getElementById('cvaVal').innerText = cva + '°';
+      document.getElementById('cvaBar').style.width = (cva / 70 * 100) + '%';
+      document.getElementById('cvaVal').style.color = cva >= 50 ? '#10b981' : '#ff3366';
+      document.getElementById('cvaBar').style.background = cva >= 50 ? '#10b981' : '#ff3366';
+
+      document.getElementById('shoulderVal').innerText = 'Δ ' + shoulderTilt + '°';
+      document.getElementById('shoulderBar').style.width = (shoulderTilt / 10 * 100) + '%';
+
+      document.getElementById('thoracicVal').innerText = thoracic + '°';
+      document.getElementById('thoracicBar').style.width = (thoracic / 110 * 100) + '%';
+
+      document.getElementById('discForceVal').innerText = discForce + ' N';
+      document.getElementById('discForceVal').style.color = discForce > 550 ? '#ff3366' : '#00f2fe';
+
+      const stateBadge = document.getElementById('postureStateBadge');
+      if (score >= 80) {
+        stateBadge.className = 'cyber-badge badge-optimal';
+        stateBadge.innerText = 'OPTIMAL ALIGNMENT';
+      } else if (activePreset === 'forward_head') {
+        stateBadge.className = 'cyber-badge badge-danger';
+        stateBadge.innerText = 'FORWARD HEAD POSTURE';
+      } else if (activePreset === 'thoracic_slouch') {
+        stateBadge.className = 'cyber-badge badge-danger';
+        stateBadge.innerText = 'THORACIC SLOUCH';
+      } else {
+        stateBadge.className = 'cyber-badge badge-warning';
+        stateBadge.innerText = 'SHOULDER ASYMMETRY';
+      }
+
+      // Draw Vision Canvas
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      if (privacy === 'wireframe') {
+        ctx.fillStyle = '#040714';
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+        bgGrad.addColorStop(0, '#0a1024');
+        bgGrad.addColorStop(1, '#050813');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Draw Skeletal Wireframe
+      const color = score >= 80 ? '#00f2fe' : (score >= 60 ? '#f59e0b' : '#ff3366');
+      const headX = (0.5 + (isMirrored ? -headForward : headForward)) * w;
+      const headY = (0.28 + thoracicOffset * 0.5) * h;
+      const shoulderY = (0.44 + thoracicOffset * 0.5) * h;
+      const lShoulderX = 0.38 * w;
+      const rShoulderX = 0.62 * w;
+      const lShoulderY = shoulderY - (shoulderDelta * 0.5 * h);
+      const rShoulderY = shoulderY + (shoulderDelta * 0.5 * h);
+      const hipY = (0.82 + thoracicOffset) * h;
+      const lHipX = 0.42 * w;
+      const rHipX = 0.58 * w;
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 3.5;
+      ctx.lineCap = 'round';
+
+      // Bones
+      ctx.beginPath();
+      ctx.moveTo(lShoulderX, lShoulderY); ctx.lineTo(rShoulderX, rShoulderY);
+      ctx.moveTo(lShoulderX, lShoulderY); ctx.lineTo(lHipX, hipY);
+      ctx.moveTo(rShoulderX, rShoulderY); ctx.lineTo(rHipX, hipY);
+      ctx.moveTo(lHipX, hipY); ctx.lineTo(rHipX, hipY);
+
+      // Spine
+      ctx.moveTo((lShoulderX + rShoulderX)/2, (lShoulderY + rShoulderY)/2);
+      ctx.lineTo((lHipX + rHipX)/2, hipY);
+
+      // Head to Neck
+      ctx.moveTo(headX, headY);
+      ctx.lineTo((lShoulderX + rShoulderX)/2, (lShoulderY + rShoulderY)/2);
+      ctx.stroke();
+
+      // CVA Angle Arc
+      ctx.fillStyle = cva < 42 ? '#ff3366' : '#10b981';
+      ctx.font = 'bold 12px "JetBrains Mono"';
+      ctx.fillText(`CVA: ${cva}°`, headX + 16, headY - 6);
+
+      // Joint Nodes
+      const joints = [
+        { x: headX, y: headY },
+        { x: lShoulderX, y: lShoulderY },
+        { x: rShoulderX, y: rShoulderY },
+        { x: lHipX, y: hipY },
+        { x: rHipX, y: hipY }
+      ];
+
+      joints.forEach(j => {
+        ctx.beginPath();
+        ctx.arc(j.x, j.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#0f172a';
+        ctx.fill();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(j.x, j.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+      });
+      ctx.restore();
+
+      // Draw 3D Spine Digital Twin
+      const sw = spineCanvas.width;
+      const sh = spineCanvas.height;
+      spineCtx.clearRect(0, 0, sw, sh);
+      spineCtx.fillStyle = '#04060f';
+      spineCtx.fillRect(0, 0, sw, sh);
+
+      const spineX = sw / 2;
+      for (let i = 0; i < 20; i++) {
+        const prog = i / 20;
+        const sy = 60 + i * 14;
+        let sx = spineX;
+
+        if (spineView === 'lateral') {
+          sx += (i < 6) ? (54 - cva) * 1.8 * (6 - i)/6 : -(90 - thoracic) * Math.sin(prog * Math.PI) * 0.8;
+        }
+
+        const discColor = discForce > 550 ? '#ff3366' : (discForce > 400 ? '#f59e0b' : '#10b981');
+        spineCtx.fillStyle = '#cbd5e1';
+        spineCtx.fillRect(sx - 16, sy, 32, 8);
+        spineCtx.fillStyle = discColor;
+        spineCtx.fillRect(sx - 12, sy + 8, 24, 4);
+      }
+
+      requestAnimationFrame(mainAnimationLoop);
+    }
+
+    // Initialize
+    renderPeripherals();
+    renderIncidents();
+    requestAnimationFrame(mainAnimationLoop);
+  </script>
+</body>
+</html>
